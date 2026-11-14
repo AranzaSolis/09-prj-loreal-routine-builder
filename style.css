@@ -49,7 +49,7 @@ body::after {
   max-width: 900px;
   position: relative;
   z-index: 1;
-  background: #fff;
+  background: transparent;
 }
 
 /* header */
@@ -98,6 +98,7 @@ body::after {
   border: 2px solid #000;
   border-radius: 8px;
   padding: 26px;
+  background: #fff;
 }
 
 .chatbox h2 {
@@ -148,6 +149,15 @@ body::after {
   white-space: pre-wrap;
 }
 
+.message-sources {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.message-sources a {
+  color: #333;
+}
+
 /* placeholder message */
 .placeholder-message {
   width: 100%;
@@ -194,7 +204,7 @@ body::after {
 }
 
 .chat-form button:hover {
-  background: #666666;
+  background: #e3a535;
 }
 
 .chat-form button:focus {
@@ -328,8 +338,9 @@ body::after {
 }
 
 .description-toggle:hover {
-  background: #f5f5f5;
+  background: #000;
   border-color: #000;
+  color: #fff;
 }
 
 .description-toggle:focus-visible,
@@ -379,6 +390,7 @@ body::after {
   padding: 20px;
   border: 2px solid #000;
   border-radius: 8px;
+  background: #fff;
 }
 
 .selected-products h2 {
@@ -437,7 +449,7 @@ body::after {
 }
 
 .generate-btn:hover {
-  background: #666;
+  background: #e3a535;
 }
 
 .generate-btn i {

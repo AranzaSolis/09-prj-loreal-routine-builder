@@ -171,10 +171,47 @@ function displayChatHistory() {
         label.textContent = message.role === "user" ? "You: " : "Beauty Advisor: ";
         content.textContent = message.content;
         messageElement.append(label, content);
+
+        if (message.citations?.length) {
+          const sources = document.createElement("div");
+          sources.className = "message-sources";
+
+          const sourcesLabel = document.createElement("strong");
+          sourcesLabel.textContent = "Sources: ";
+          sources.appendChild(sourcesLabel);
+
+          message.citations.forEach((citation, citationIndex) => {
+            const link = document.createElement("a");
+            link.href = citation.url;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = citation.title || `Source ${citationIndex + 1}`;
+            sources.appendChild(link);
+
+            if (citationIndex < message.citations.length - 1) {
+              sources.append(" | ");
+            }
+          });
+
+          messageElement.appendChild(sources);
+        }
+
         chatWindow.appendChild(messageElement);
       });
 
     chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+/* Get source links from the web-search annotations returned by OpenAI. */
+function getCitations(message) {
+  return (message.annotations || [])
+    .map((annotation) => annotation.url_citation || annotation)
+    .filter((citation) => citation.url)
+    .map(({ url, title }) => ({ url, title }))
+    .filter(
+      (citation, index, citations) =>
+        citations.findIndex((item) => item.url === citation.url) === index
+    );
 }
 
 /* Load products once so selection works across category changes. */
@@ -213,11 +250,13 @@ async function getAIReply() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      messages: conversationMessages,
-      // Give the AI enough room to finish, while the prompt asks it to stay concise.
-      max_completion_tokens: 1000,
-      // A little randomness makes responses sound more natural and conversational.
-      temperature: 0.7,
+      // This search model can retrieve current product and routine information.
+      model: "gpt-4o-search-preview",
+      web_search_options: {},
+      // Keep UI-only citation data out of the API message history.
+      messages: conversationMessages.map(({ role, content }) => ({ role, content })),
+      // Give the AI enough room to finish a complete routine or answer.
+      max_completion_tokens: 2000,
     }),
   });
 
@@ -226,13 +265,17 @@ async function getAIReply() {
   }
 
   const data = await response.json();
-  const reply = data.choices?.[0]?.message?.content;
+  const message = data.choices?.[0]?.message;
+  const reply = message?.content;
 
   if (!reply) {
     throw new Error("The AI returned an empty response.");
   }
 
-  return reply;
+  return {
+    content: reply,
+    citations: getCitations(message),
+  };
 }
 
 /* Send only the selected product details to the AI worker. */
@@ -255,7 +298,7 @@ generateRoutineButton.addEventListener("click", async () => {
     {
       role: "system",
       content:
-        "You are a friendly L'Oréal skincare and beauty advisor. When creating or discussing this routine, you must use only the products in the selected product list provided by the user. Never invent, add, substitute, or recommend another product, even as an alternative. Do not mention any unselected product by name. If the selected products are not enough for a step, explain that the step is not covered instead of suggesting another product. Answer follow-up questions about skincare, haircare, makeup, fragrance, and related beauty topics. Keep responses concise, usually under 400 words, but always finish the explanation and do not cut off mid-sentence. If a question is unrelated to L'Oréal products, routines, recommendations, beauty-related topics, etc, politely say that you can only help with beauty topics. Never recommend anything else out of these topics. Also make sure to sound energetic in the responses and friendly",
+        "You are a friendly L'Oréal skincare and beauty advisor. When creating or discussing this routine, you must use only the products in the selected product list provided by the user. Never invent, add, substitute, or recommend another product, even as an alternative. Do not mention any unselected product by name. If the selected products are not enough for a step, explain that the step is not covered instead of suggesting another product. Answer follow-up questions about skincare, haircare, makeup, fragrance, and related beauty topics. Keep responses concise, usually under 600 words, but always complete the explanation. Before responding, make sure the final sentence is finished and never stop mid-sentence; if needed, shorten details to finish. If a question is unrelated products, routines, recommendations, beauty-related topics, etc, politely say that you can only help with beauty topics. Never recommend anything else out of these topics. Also make sure to sound energetic in the responses and friendly. Use web search for current product information, availability, ingredients, trends, or routine guidance when it would improve the answer. Cite the web sources returned by the search tool.",
     },
     {
       role: "user",
@@ -270,7 +313,11 @@ generateRoutineButton.addEventListener("click", async () => {
 
   try {
     const routine = await getAIReply();
-    conversationMessages.push({ role: "assistant", content: routine });
+    conversationMessages.push({
+      role: "assistant",
+      content: routine.content,
+      citations: routine.citations,
+    });
     displayChatHistory();
   } catch (error) {
     conversationMessages = [];
@@ -308,7 +355,11 @@ chatForm.addEventListener("submit", async (e) => {
 
   try {
     const reply = await getAIReply();
-    conversationMessages.push({ role: "assistant", content: reply });
+    conversationMessages.push({
+      role: "assistant",
+      content: reply.content,
+      citations: reply.citations,
+    });
     displayChatHistory();
   } catch (error) {
     conversationMessages.pop();
