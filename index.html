@@ -42,6 +42,20 @@
       <!-- Products Grid -->
       <div id="productsContainer" class="products-grid"></div>
 
+      <dialog
+        id="productDescriptionModal"
+        class="product-description-modal"
+        aria-labelledby="modalProductName"
+      >
+        <div class="modal-content">
+          <h2 id="modalProductName"></h2>
+          <p id="modalProductDescription"></p>
+          <button id="closeDescriptionModal" class="clear-btn" type="button">
+            Close
+          </button>
+        </div>
+      </dialog>
+
       <!-- Selected Products -->
       <div class="selected-products">
         <h2>Selected Products</h2>

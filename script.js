@@ -6,6 +6,10 @@ const generateRoutineButton = document.getElementById("generateRoutine");
 const chatForm = document.getElementById("chatForm");
 const chatWindow = document.getElementById("chatWindow");
 const clearSelectionsButton = document.getElementById("clearSelections");
+const productDescriptionModal = document.getElementById("productDescriptionModal");
+const modalProductName = document.getElementById("modalProductName");
+const modalProductDescription = document.getElementById("modalProductDescription");
+const closeDescriptionModal = document.getElementById("closeDescriptionModal");
 
 // The frontend calls the class Cloudflare Worker, which keeps the OpenAI key private.
 const WORKER_URL = "https://solitary-firefly-f54b.aranza-solis-almanza.workers.dev/";
@@ -33,25 +37,30 @@ function displayProducts(products) {
   productsContainer.innerHTML = products
     .map(
       (product) => `
-    <button class="product-card ${
+    <article class="product-card ${
       selectedProducts.some((selectedProduct) => selectedProduct.id === product.id)
         ? "selected"
         : ""
-    }" data-product-id="${product.id}" type="button">
-      <img src="${product.image}" alt="${product.name}">
-      <div class="product-info">
-        <h3>${product.name}</h3>
-        <p>${product.brand}</p>
-      </div>
-    </button>
+    }">
+      <button class="product-select" data-product-id="${product.id}" type="button">
+        <img src="${product.image}" alt="${product.name}">
+        <span class="product-info">
+          <strong>${product.name}</strong>
+          <span>${product.brand}</span>
+        </span>
+      </button>
+      <button class="description-toggle" data-product-id="${product.id}" type="button">
+        View description
+      </button>
+    </article>
   `
     )
     .join("");
 
-  productsContainer.querySelectorAll(".product-card").forEach((card) => {
-    card.addEventListener("click", () => {
+  productsContainer.querySelectorAll(".product-select").forEach((selectButton) => {
+    selectButton.addEventListener("click", () => {
       const product = allProducts.find(
-        (item) => item.id === Number(card.dataset.productId)
+        (item) => item.id === Number(selectButton.dataset.productId)
       );
       const alreadySelected = selectedProducts.some(
         (selectedProduct) => selectedProduct.id === product.id
@@ -68,7 +77,23 @@ function displayProducts(products) {
       displayProducts(products);
     });
   });
+
+  productsContainer.querySelectorAll(".description-toggle").forEach((toggle) => {
+    toggle.addEventListener("click", () => {
+      const product = allProducts.find(
+        (item) => item.id === Number(toggle.dataset.productId)
+      );
+
+      modalProductName.textContent = `${product.brand} ${product.name}`;
+      modalProductDescription.textContent = product.description;
+      productDescriptionModal.showModal();
+    });
+  });
 }
+
+closeDescriptionModal.addEventListener("click", () => {
+  productDescriptionModal.close();
+});
 
 /* Create HTML for displaying product cards */
 function displaySelectedProducts() {

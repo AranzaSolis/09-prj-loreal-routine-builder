@@ -252,11 +252,13 @@ body::after {
   color: #333;
   padding: 15px;
   border-radius: 4px;
-  display: flex;
-  gap: 15px;
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 15px;
+  row-gap: 6px;
   min-height: 160px;
   text-align: left;
-  cursor: pointer;
 }
 
 .product-card:hover {
@@ -269,14 +271,28 @@ body::after {
   box-shadow: 0 0 0 2px #ff003b;
 }
 
-.product-card img {
+.product-select {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.product-select img {
   width: 110px;
   height: 110px;
   object-fit: contain;
   flex-shrink: 0;
 }
 
-.product-card .product-info {
+.product-select .product-info {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -284,14 +300,77 @@ body::after {
   min-height: 110px;
 }
 
-.product-card h3 {
+.product-select strong {
   font-size: 16px;
+  line-height: 1.25;
+  min-height: 40px;
   margin-bottom: 8px;
 }
 
-.product-card p {
+.product-select span span {
   font-size: 14px;
   color: #666;
+}
+
+.description-toggle {
+  grid-column: 2;
+  justify-self: start;
+  align-self: start;
+  margin-top: 0;
+  padding: 4px 8px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.description-toggle:hover {
+  background: #f5f5f5;
+  border-color: #000;
+}
+
+.description-toggle:focus-visible,
+.product-select:focus-visible,
+.product-description-modal button:focus-visible {
+  outline: 2px solid #ff003b;
+  outline-offset: 3px;
+}
+
+.product-description-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  width: min(90%, 520px);
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  color: #333;
+}
+
+.product-description-modal::backdrop {
+  background: rgb(0 0 0 / 60%);
+}
+
+.modal-content {
+  padding: 25px;
+}
+
+.modal-content h2 {
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+.modal-content p {
+  line-height: 1.6;
+}
+
+.modal-content .clear-btn {
+  margin-top: 20px;
 }
 
 /* selected products */
