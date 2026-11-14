@@ -278,6 +278,8 @@ chatForm.addEventListener("submit", async (e) => {
     "beforeend",
     '<div class="chat-message advisor-message"><strong class="message-label">Beauty Advisor: </strong><span class="message-content">Thinking...</span></div>'
   );
+  
+  
 
   try {
     const reply = await getAIReply();
