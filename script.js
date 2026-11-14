@@ -1,5 +1,6 @@
 /* Get references to DOM elements */
 const categoryFilter = document.getElementById("categoryFilter");
+const productSearch = document.getElementById("productSearch");
 const productsContainer = document.getElementById("productsContainer");
 const selectedProductsList = document.getElementById("selectedProductsList");
 const generateRoutineButton = document.getElementById("generateRoutine");
@@ -17,6 +18,28 @@ const SELECTED_PRODUCTS_KEY = "lorealSelectedProducts";
 let allProducts = [];
 let selectedProducts = [];
 let conversationMessages = [];
+
+// Return products that match both the selected category and search text.
+function getFilteredProducts() {
+  const selectedCategory = categoryFilter.value;
+  const searchTerm = productSearch.value.trim().toLowerCase();
+
+  return allProducts.filter((product) => {
+    const matchesCategory =
+      !selectedCategory || product.category === selectedCategory;
+    const searchableText = [
+      product.name,
+      product.brand,
+      product.category,
+      product.description,
+    ]
+      .join(" ")
+      .toLowerCase();
+    const matchesSearch = !searchTerm || searchableText.includes(searchTerm);
+
+    return matchesCategory && matchesSearch;
+  });
+}
 
 /* Show initial placeholder until user selects a category */
 productsContainer.innerHTML = `
@@ -55,7 +78,10 @@ function displayProducts(products) {
     </article>
   `
     )
-    .join("");
+    .join("") ||
+    `<div class="placeholder-message">
+      No products match your filters
+    </div>`;
 
   productsContainer.querySelectorAll(".product-select").forEach((selectButton) => {
     selectButton.addEventListener("click", () => {
@@ -74,7 +100,7 @@ function displayProducts(products) {
 
       saveSelectedProducts();
       displaySelectedProducts();
-      displayProducts(products);
+      displayProducts(getFilteredProducts());
     });
   });
 
@@ -123,10 +149,7 @@ function displaySelectedProducts() {
         saveSelectedProducts();
         displaySelectedProducts();
 
-        const categoryProducts = allProducts.filter(
-          (product) => product.category === categoryFilter.value
-        );
-        displayProducts(categoryProducts);
+        displayProducts(getFilteredProducts());
       });
     });
 }
@@ -172,46 +195,10 @@ function displayChatHistory() {
         content.textContent = message.content;
         messageElement.append(label, content);
 
-        if (message.citations?.length) {
-          const sources = document.createElement("div");
-          sources.className = "message-sources";
-
-          const sourcesLabel = document.createElement("strong");
-          sourcesLabel.textContent = "Sources: ";
-          sources.appendChild(sourcesLabel);
-
-          message.citations.forEach((citation, citationIndex) => {
-            const link = document.createElement("a");
-            link.href = citation.url;
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-            link.textContent = citation.title || `Source ${citationIndex + 1}`;
-            sources.appendChild(link);
-
-            if (citationIndex < message.citations.length - 1) {
-              sources.append(" | ");
-            }
-          });
-
-          messageElement.appendChild(sources);
-        }
-
         chatWindow.appendChild(messageElement);
       });
 
     chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
-/* Get source links from the web-search annotations returned by OpenAI. */
-function getCitations(message) {
-  return (message.annotations || [])
-    .map((annotation) => annotation.url_citation || annotation)
-    .filter((citation) => citation.url)
-    .map(({ url, title }) => ({ url, title }))
-    .filter(
-      (citation, index, citations) =>
-        citations.findIndex((item) => item.url === citation.url) === index
-    );
 }
 
 /* Load products once so selection works across category changes. */
@@ -220,18 +207,23 @@ loadProducts().then((products) => {
   restoreSelectedProducts();
 });
 
-/* Filter and display products when category changes */
-categoryFilter.addEventListener("change", async (e) => {
+/* Filter and display products when either filter changes. */
+async function updateProductGrid() {
   if (!allProducts.length) {
     allProducts = await loadProducts();
   }
 
-  const selectedCategory = e.target.value;
-  const filteredProducts = allProducts.filter(
-    (product) => product.category === selectedCategory
-  );
+  displayProducts(getFilteredProducts());
+}
 
-  displayProducts(filteredProducts);
+categoryFilter.addEventListener("change", updateProductGrid);
+productSearch.addEventListener("input", () => {
+  if (!productSearch.value.trim()) {
+    productsContainer.innerHTML = "";
+    return;
+  }
+
+  updateProductGrid();
 });
 
 /* Remove all selected products from the page and localStorage. */
@@ -239,9 +231,7 @@ clearSelectionsButton.addEventListener("click", () => {
   selectedProducts = [];
   localStorage.removeItem(SELECTED_PRODUCTS_KEY);
   displaySelectedProducts();
-  displayProducts(
-    allProducts.filter((product) => product.category === categoryFilter.value)
-  );
+  displayProducts(getFilteredProducts());
 });
 
 /* Send the conversation to the AI worker and return its reply. */
@@ -250,10 +240,7 @@ async function getAIReply() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      // This search model can retrieve current product and routine information.
-      model: "gpt-4o-search-preview",
-      web_search_options: {},
-      // Keep UI-only citation data out of the API message history.
+      model: "gpt-4o",
       messages: conversationMessages.map(({ role, content }) => ({ role, content })),
       // Give the AI enough room to finish a complete routine or answer.
       max_completion_tokens: 2000,
@@ -272,10 +259,7 @@ async function getAIReply() {
     throw new Error("The AI returned an empty response.");
   }
 
-  return {
-    content: reply,
-    citations: getCitations(message),
-  };
+  return reply;
 }
 
 /* Send only the selected product details to the AI worker. */
@@ -298,7 +282,7 @@ generateRoutineButton.addEventListener("click", async () => {
     {
       role: "system",
       content:
-        "You are a friendly L'Oréal skincare and beauty advisor. When creating or discussing this routine, you must use only the products in the selected product list provided by the user. Never invent, add, substitute, or recommend another product, even as an alternative. Do not mention any unselected product by name. If the selected products are not enough for a step, explain that the step is not covered instead of suggesting another product. Answer follow-up questions about skincare, haircare, makeup, fragrance, and related beauty topics. Keep responses concise, usually under 600 words, but always complete the explanation. Before responding, make sure the final sentence is finished and never stop mid-sentence; if needed, shorten details to finish. If a question is unrelated products, routines, recommendations, beauty-related topics, etc, politely say that you can only help with beauty topics. Never recommend anything else out of these topics. Also make sure to sound energetic in the responses and friendly. Use web search for current product information, availability, ingredients, trends, or routine guidance when it would improve the answer. Cite the web sources returned by the search tool.",
+        "You are a friendly L'Oréal skincare and beauty advisor. When creating or discussing this routine, you must use only the products in the selected product list provided by the user. Never invent, add, substitute, or recommend another product, even as an alternative. Do not mention any unselected product by name. If the selected products are not enough for a step, explain that the step is not covered instead of suggesting another product. Answer follow-up questions about skincare, haircare, makeup, fragrance, and related beauty topics. Keep responses concise, usually under 600 words, but always complete the explanation. Before responding, make sure the final sentence is finished and never stop mid-sentence; if needed, shorten details to finish. If a question is unrelated products, routines, recommendations, beauty-related topics, etc, politely say that you can only help with beauty topics. Never recommend anything else out of these topics. Also make sure to sound energetic in the responses and friendly.",
     },
     {
       role: "user",
@@ -315,8 +299,7 @@ generateRoutineButton.addEventListener("click", async () => {
     const routine = await getAIReply();
     conversationMessages.push({
       role: "assistant",
-      content: routine.content,
-      citations: routine.citations,
+      content: routine,
     });
     displayChatHistory();
   } catch (error) {
@@ -357,8 +340,7 @@ chatForm.addEventListener("submit", async (e) => {
     const reply = await getAIReply();
     conversationMessages.push({
       role: "assistant",
-      content: reply.content,
-      citations: reply.citations,
+      content: reply,
     });
     displayChatHistory();
   } catch (error) {
