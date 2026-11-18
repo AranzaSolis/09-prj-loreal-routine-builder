@@ -1,8 +1,10 @@
 /* —— basic reset —— */
+/* Stores reusable global design values such as the L'Oréal gold color. Kind: root pseudo-class selector. */
 :root {
   --loreal-gold: rgb(227, 166, 53);
 }
 
+/* Removes browser-added spacing and uses border-box sizing on every element. Kind: universal selector. */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -10,18 +12,21 @@
 }
 
 /* —— body + fonts —— */
+/* Sets the page font, text color, centering, and full-height layout. Kind: element selector. */
 body {
   font-family: "Montserrat", Arial, Helvetica, sans-serif;
   color: #333;
   display: flex;
   justify-content: center;
-  border-top: 8px solid #222;
   position: relative;
   min-height: 100vh;
+  isolation: isolate;
 }
 
 /* Hollow gold circles add simple decorative accents in opposite corners. */
+/* Creates the lower-left decorative gold circle with a pseudo-element. Kind: element pseudo-element selector. */
 body::before,
+/* Creates the upper-right decorative gold circle with a pseudo-element. Kind: element pseudo-element selector. */
 body::after {
   content: "";
   position: fixed;
@@ -34,16 +39,20 @@ body::after {
   pointer-events: none;
 }
 
+/* Creates the lower-left decorative gold circle with a pseudo-element. Kind: element pseudo-element selector. */
 body::before {
   left: -250px;
   bottom: -250px;
 }
 
+/* Creates the upper-right decorative gold circle with a pseudo-element. Kind: element pseudo-element selector. */
 body::after {
   top: -250px;
   right: -250px;
+  z-index: -1;
 }
 
+/* Centers the main page content and keeps it above the decorative circles. Kind: class selector. */
 .page-wrapper {
   width: 90%;
   max-width: 900px;
@@ -52,18 +61,34 @@ body::after {
   background: transparent;
 }
 
+/* Adds the fixed black line across the very top of the page. Kind: class selector with pseudo-class or pseudo-element. */
+.page-wrapper::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  height: 8px;
+  background: #222;
+  pointer-events: none;
+}
+
 /* header */
+/* Centers and spaces the logo and page title. Kind: class selector. */
 .site-header {
   text-align: center;
   padding-top: 50px;
   padding-bottom: 10px;
 }
 
+/* Controls the header logo size and bottom spacing. Kind: class selector. */
 .logo {
   width: 250px;
   margin-bottom: 15px;
 }
 
+/* Styles the main heading text. Kind: class selector. */
 .site-title {
   font-size: 22px;
   font-weight: 500;
@@ -71,6 +96,7 @@ body::after {
 }
 
 /* category filter */
+/* Lays out the product search and category controls. Kind: class selector. */
 .search-section {
   margin: 30px 0;
   display: flex;
@@ -78,7 +104,10 @@ body::after {
   flex-wrap: wrap;
 }
 
+/* Styles the product search text field. Kind: class descendant selector. */
+/* Styles the mobile search field. Kind: class descendant selector. */
 .search-section input,
+/* Styles the category dropdown. Kind: class descendant selector. */
 .search-section select {
   width: 100%;
   padding: 16px;
@@ -90,21 +119,26 @@ body::after {
   font-weight: 500;
 }
 
+/* Styles the product search text field. Kind: class descendant selector. */
 .search-section input {
   flex: 1 1 55%;
 }
 
+/* Styles the category dropdown. Kind: class descendant selector. */
 .search-section select {
   flex: 1 1 35%;
 }
 
+/* Changes the search field appearance while it is selected. Kind: class descendant selector with pseudo-class. */
 .search-section input:focus,
+/* Changes the dropdown appearance while it is selected. Kind: class descendant selector. */
 .search-section select:focus {
   outline: none;
   border-color: #666;
 }
 
 /* chat section */
+/* Creates the bordered chat container. Kind: class selector. */
 .chatbox {
   margin: 40px 0;
   border: 2px solid #000;
@@ -113,11 +147,13 @@ body::after {
   background: #fff;
 }
 
+/* Styles the chat area heading. Kind: class descendant selector. */
 .chatbox h2 {
   font-size: 20px;
   margin-bottom: 20px;
 }
 
+/* Defines the scrollable chat message area. Kind: class selector. */
 .chat-window {
   padding: 20px;
   font-size: 18px;
@@ -129,6 +165,7 @@ body::after {
   margin-bottom: 20px;
 }
 
+/* Provides shared layout and spacing for chat bubbles. Kind: class selector. */
 .chat-message {
   display: flex;
   flex-direction: column;
@@ -139,6 +176,7 @@ body::after {
   border-radius: 16px;
 }
 
+/* Styles messages sent by the user. Kind: class selector. */
 .user-message {
   margin-left: auto;
   color: #fff;
@@ -146,22 +184,26 @@ body::after {
   border-bottom-right-radius: 4px;
 }
 
+/* Styles messages returned by the advisor. Kind: class selector. */
 .advisor-message {
   margin-right: auto;
   background: #e8e8e8;
   border-bottom-left-radius: 4px;
 }
 
+/* Styles the name shown above a chat message. Kind: class selector. */
 .message-label {
   margin-bottom: 4px;
   font-size: 18px;
 }
 
+/* Preserves the formatting of chat message text. Kind: class selector. */
 .message-content {
   white-space: pre-wrap;
 }
 
 /* placeholder message */
+/* Centers and styles the empty chat placeholder. Kind: class selector. */
 .placeholder-message {
   width: 100%;
   text-align: center;
@@ -171,12 +213,14 @@ body::after {
 }
 
 /* input row */
+/* Lays out the chat input and send button. Kind: class selector. */
 .chat-form {
   display: flex;
   gap: 12px;
   margin-top: 16px;
 }
 
+/* Styles the chat text entry field. Kind: class descendant selector. */
 .chat-form input {
   flex: 1;
   padding: 12px;
@@ -186,11 +230,13 @@ body::after {
   background: transparent;
 }
 
+/* Changes the chat input line while it is selected. Kind: class descendant selector. */
 .chat-form input:focus {
   outline: none;
   border-bottom-color: #000;
 }
 
+/* Styles the send button and its icon layout. Kind: class descendant selector. */
 .chat-form button {
   font-size: 18px;
   background: #000;
@@ -206,16 +252,19 @@ body::after {
   transition: background 0.3s;
 }
 
+/* Changes the send button when the pointer is over it. Kind: class descendant selector. */
 .chat-form button:hover {
   background: #e3a535;
 }
 
+/* Shows a keyboard focus outline on the send button. Kind: class descendant selector. */
 .chat-form button:focus {
   outline: 2px solid #000;
   outline-offset: 2px;
 }
 
 /* visually hidden */
+/* Keeps labels accessible while hiding them visually. Kind: class selector. */
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -229,6 +278,7 @@ body::after {
 }
 
 /* footer */
+/* Styles the footer spacing, text, and alignment. Kind: class selector. */
 .site-footer {
   margin: 60px 0 40px;
   text-align: center;
@@ -236,21 +286,25 @@ body::after {
   color: #666;
 }
 
+/* Adds spacing above the footer navigation. Kind: class descendant selector. */
 .site-footer nav {
   margin-top: 12px;
 }
 
+/* Styles footer links. Kind: class descendant selector. */
 .site-footer a {
   margin: 0 8px;
   color: #000;
   text-decoration: none;
 }
 
+/* Changes footer link color on hover. Kind: class descendant selector. */
 .site-footer a:hover {
   color: #666666;
 }
 
 /* products grid */
+/* Creates the responsive layout for product cards. Kind: class selector. */
 .products-grid {
   display: flex;
   flex-wrap: wrap;
@@ -258,6 +312,7 @@ body::after {
   margin: 30px 0;
 }
 
+/* Styles each product card and its internal grid. Kind: class selector. */
 .product-card {
   flex: 0 1 calc(33.333% - 14px);
   border: 1px solid #ccc;
@@ -274,16 +329,19 @@ body::after {
   text-align: left;
 }
 
+/* Adds emphasis when a product card is hovered. Kind: class selector with pseudo-class or pseudo-element. */
 .product-card:hover {
   border-color: #000;
   box-shadow: 0 0 0 2px #000;
 }
 
+/* Highlights a product that the user selected. Kind: class selector. */
 .product-card.selected {
   border-color: #ff003b;
   box-shadow: 0 0 0 2px #ff003b;
 }
 
+/* Makes the product information act as a full-width button. Kind: class selector. */
 .product-select {
   grid-column: 1 / -1;
   display: flex;
@@ -298,6 +356,7 @@ body::after {
   cursor: pointer;
 }
 
+/* Controls the size and appearance of product images. Kind: class descendant selector. */
 .product-select img {
   width: 110px;
   height: 110px;
@@ -305,6 +364,7 @@ body::after {
   flex-shrink: 0;
 }
 
+/* Lays out product name and brand information. Kind: class descendant selector. */
 .product-select .product-info {
   flex: 1;
   display: flex;
@@ -313,6 +373,7 @@ body::after {
   min-height: 110px;
 }
 
+/* Styles product names. Kind: class descendant selector. */
 .product-select strong {
   font-size: 16px;
   line-height: 1.25;
@@ -320,11 +381,13 @@ body::after {
   margin-bottom: 8px;
 }
 
+/* Styles nested brand or category text. Kind: class descendant selector. */
 .product-select span span {
   font-size: 14px;
   color: #666;
 }
 
+/* Styles the button that opens a product description. Kind: class selector. */
 .description-toggle {
   grid-column: 2;
   justify-self: start;
@@ -340,19 +403,24 @@ body::after {
   cursor: pointer;
 }
 
+/* Changes the description button on hover. Kind: class selector with pseudo-class or pseudo-element. */
 .description-toggle:hover {
   background: #000;
   border-color: #000;
   color: #fff;
 }
 
+/* Adds a visible keyboard focus outline to the description button. Kind: class selector with pseudo-class. */
 .description-toggle:focus-visible,
+/* Adds a visible keyboard focus outline to a product button. Kind: class selector with pseudo-class. */
 .product-select:focus-visible,
+/* Adds a visible keyboard focus outline to modal buttons. Kind: class descendant selector. */
 .product-description-modal button:focus-visible {
   outline: 2px solid #ff003b;
   outline-offset: 3px;
 }
 
+/* Centers and styles the product description dialog. Kind: class selector. */
 .product-description-modal {
   position: fixed;
   top: 50%;
@@ -366,28 +434,34 @@ body::after {
   color: #333;
 }
 
+/* Darkens the page behind the product description dialog. Kind: class selector with pseudo-class or pseudo-element. */
 .product-description-modal::backdrop {
   background: rgb(0 0 0 / 60%);
 }
 
+/* Adds padding inside the product description dialog. Kind: class selector. */
 .modal-content {
   padding: 25px;
 }
 
+/* Styles the dialog product name. Kind: class descendant selector. */
 .modal-content h2 {
   margin-bottom: 15px;
   font-size: 20px;
 }
 
+/* Improves the readability of dialog description text. Kind: class descendant selector. */
 .modal-content p {
   line-height: 1.6;
 }
 
+/* Adds spacing above the dialog close button. Kind: class descendant selector. */
 .modal-content .clear-btn {
   margin-top: 20px;
 }
 
 /* selected products */
+/* Styles the selected-products summary section. Kind: class selector. */
 .selected-products {
   margin: 40px 0;
   padding: 20px;
@@ -396,17 +470,20 @@ body::after {
   background: #fff;
 }
 
+/* Styles the selected-products heading. Kind: class descendant selector. */
 .selected-products h2 {
   font-size: 20px;
   margin-bottom: 20px;
 }
 
+/* Arranges the selected product chips. Kind: ID selector. */
 #selectedProductsList {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
+/* Styles a single selected-product chip. Kind: class selector. */
 .selected-product {
   display: flex;
   align-items: center;
@@ -416,12 +493,14 @@ body::after {
   border-radius: 20px;
 }
 
+/* Styles the remove button inside a selected-product chip. Kind: class descendant selector. */
 .selected-product button {
   border: 0;
   background: transparent;
   cursor: pointer;
 }
 
+/* Styles the clear selections button. Kind: class selector. */
 .clear-btn {
   margin-top: 20px;
   padding: 10px 14px;
@@ -432,11 +511,13 @@ body::after {
   cursor: pointer;
 }
 
+/* Changes the clear button on hover. Kind: class selector with pseudo-class or pseudo-element. */
 .clear-btn:hover {
   color: #fff;
   background: #333;
 }
 
+/* Styles the routine generation button. Kind: class selector. */
 .generate-btn {
   width: 100%;
   margin-top: 20px;
@@ -451,43 +532,56 @@ body::after {
   transition: background 0.3s;
 }
 
+/* Changes the routine button on hover. Kind: class selector with pseudo-class or pseudo-element. */
 .generate-btn:hover {
   background: #e3a535;
 }
 
+/* Adds spacing after the routine button icon. Kind: class descendant selector. */
 .generate-btn i {
   margin-right: 8px;
 }
 
 /* RTL layout overrides apply only when the page direction is set to RTL. */
+/* Styles the matching element, state, or layout. Kind: attribute and class selector combination. */
 html[dir="rtl"] body {
   direction: rtl;
   text-align: right;
 }
 
+/* Arranges product cards from right to left. Kind: attribute and class descendant selector combination. */
 html[dir="rtl"] .products-grid,
+/* Styles the matching element, state, or layout. Kind: attribute and class selector combination. */
 html[dir="rtl"] #selectedProductsList {
   direction: rtl;
 }
 
+/* Aligns product card text from right to left. Kind: attribute and class descendant selector combination. */
 html[dir="rtl"] .product-card,
+/* Styles the matching element, state, or layout. Kind: attribute and class selector combination. */
 html[dir="rtl"] .product-select {
   text-align: right;
 }
 
+/* Styles the matching element, state, or layout. Kind: attribute and class selector combination. */
 html[dir="rtl"] .description-toggle {
   grid-column: 1;
   justify-self: end;
 }
 
+/* Applies right-to-left layout to the selected-products section. Kind: attribute and class descendant selector combination. */
 html[dir="rtl"] .selected-products,
+/* Applies right-to-left layout to the chat container. Kind: attribute and class descendant selector combination. */
 html[dir="rtl"] .chatbox,
+/* Applies right-to-left layout to the chat message window. Kind: attribute and class descendant selector combination. */
 html[dir="rtl"] .chat-window,
+/* Styles the matching element, state, or layout. Kind: attribute and class selector combination. */
 html[dir="rtl"] .chat-form {
   direction: rtl;
   text-align: right;
 }
 
+/* Styles the matching element, state, or layout. Kind: attribute and class selector combination. */
 html[dir="rtl"] .user-message {
   margin-left: auto;
   margin-right: 0;
@@ -495,6 +589,7 @@ html[dir="rtl"] .user-message {
   border-bottom-right-radius: 16px;
 }
 
+/* Styles the matching element, state, or layout. Kind: attribute and class selector combination. */
 html[dir="rtl"] .advisor-message {
   margin-left: 0;
   margin-right: auto;
@@ -502,75 +597,94 @@ html[dir="rtl"] .advisor-message {
   border-bottom-right-radius: 4px;
 }
 
+/* Styles the matching element, state, or layout. Kind: attribute and class selector combination. */
 html[dir="rtl"] .generate-btn i {
   margin-left: 8px;
   margin-right: 0;
 }
 
+/* Responsive layout rule. Kind: media at-rule. */
 @media (max-width: 700px) {
+/* Styles each product card and its internal grid. Kind: class selector. */
   .product-card {
     flex-basis: calc(50% - 10px);
   }
 
+/* Controls the size and appearance of product images. Kind: class descendant selector. */
   .product-select img {
     width: 90px;
     height: 90px;
   }
 }
 
+/* Responsive layout rule. Kind: media at-rule. */
 @media (max-width: 480px) {
+/* Centers the main page content and keeps it above the decorative circles. Kind: class selector. */
   .page-wrapper {
     width: calc(100% - 24px);
   }
 
+/* Centers and spaces the logo and page title. Kind: class selector. */
   .site-header {
     padding-top: 30px;
   }
 
+/* Controls the header logo size and bottom spacing. Kind: class selector. */
   .logo {
     width: min(220px, 80%);
   }
 
+/* Styles the main heading text. Kind: class selector. */
   .site-title {
     font-size: 19px;
   }
 
+/* Lays out the product search and category controls. Kind: class selector. */
   .search-section {
     flex-direction: column;
   }
 
   .search-section input,
+/* Styles the category dropdown. Kind: class descendant selector. */
   .search-section select {
     flex: 1 1 auto;
   }
 
+/* Styles each product card and its internal grid. Kind: class selector. */
   .product-card {
     flex-basis: 100%;
   }
 
+/* Adds compact padding to the mobile chat container. Kind: class selector. */
   .chatbox,
+/* Styles the selected-products summary section. Kind: class selector. */
   .selected-products {
     padding: 16px;
   }
 
+/* Defines the scrollable chat message area. Kind: class selector. */
   .chat-window {
     padding: 12px;
     font-size: 16px;
   }
 
+/* Lays out the chat input and send button. Kind: class selector. */
   .chat-form {
     gap: 8px;
   }
 
+/* Styles the chat text entry field. Kind: class descendant selector. */
   .chat-form input {
     min-width: 0;
     font-size: 16px;
   }
 
+/* Styles a single selected-product chip. Kind: class selector. */
   .selected-product {
     max-width: 100%;
   }
 
+/* Styles the matching element, state, or layout. Kind: class descendant selector. */
   .selected-product span {
     overflow-wrap: anywhere;
   }
