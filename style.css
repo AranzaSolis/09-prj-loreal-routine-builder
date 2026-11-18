@@ -315,6 +315,7 @@ body::after {
 /* Styles each product card and its internal grid. Kind: class selector. */
 .product-card {
   flex: 0 1 calc(33.333% - 14px);
+  min-width: 0;
   border: 1px solid #ccc;
   background: #fff;
   color: #333;
@@ -373,6 +374,9 @@ body::after {
   justify-content: center;
   min-height: 110px;
   min-width: 0;
+  max-width: 100%;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 /* Styles product names. Kind: class descendant selector. */
@@ -381,13 +385,19 @@ body::after {
   line-height: 1.25;
   min-height: 40px;
   margin-bottom: 8px;
-  overflow-wrap: anywhere;
+  max-width: 100%;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 /* Styles nested brand or category text. Kind: class descendant selector. */
 .product-select span span {
+  display: block;
+  max-width: 100%;
   font-size: 14px;
   color: #666;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 /* Styles the button that opens a product description. Kind: class selector. */
@@ -611,12 +621,18 @@ html[dir="rtl"] .generate-btn i {
 /* Styles each product card and its internal grid. Kind: class selector. */
   .product-card {
     flex-basis: calc(50% - 10px);
+    grid-template-columns: 90px minmax(0, 1fr);
   }
 
 /* Controls the size and appearance of product images. Kind: class descendant selector. */
   .product-select img {
     width: 90px;
     height: 90px;
+  }
+
+/* Keeps the description button directly below the product image on narrow screens. Kind: class selector. */
+  .description-toggle {
+    grid-column: 1;
   }
 }
 
