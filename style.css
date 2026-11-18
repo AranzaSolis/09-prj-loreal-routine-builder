@@ -348,6 +348,7 @@ body::after {
   align-items: center;
   gap: 15px;
   width: 100%;
+  min-width: 0;
   padding: 0;
   border: 0;
   background: transparent;
@@ -371,6 +372,7 @@ body::after {
   flex-direction: column;
   justify-content: center;
   min-height: 110px;
+  min-width: 0;
 }
 
 /* Styles product names. Kind: class descendant selector. */
@@ -379,6 +381,7 @@ body::after {
   line-height: 1.25;
   min-height: 40px;
   margin-bottom: 8px;
+  overflow-wrap: anywhere;
 }
 
 /* Styles nested brand or category text. Kind: class descendant selector. */
@@ -653,6 +656,30 @@ html[dir="rtl"] .generate-btn i {
 /* Styles each product card and its internal grid. Kind: class selector. */
   .product-card {
     flex-basis: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+/* Keeps the product image and text arranged cleanly on narrow screens. Kind: class descendant selector. */
+  .product-select {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+/* Keeps the mobile product image within the card width. Kind: class descendant selector. */
+  .product-select img {
+    width: 100%;
+    max-width: 110px;
+  }
+
+/* Removes extra minimum height and keeps mobile product text compact. Kind: class descendant selector. */
+  .product-select .product-info {
+    min-height: 0;
+    width: 100%;
+  }
+
+/* Keeps the description button inside the mobile card grid. Kind: class selector. */
+  .description-toggle {
+    grid-column: 1;
   }
 
 /* Adds compact padding to the mobile chat container. Kind: class selector. */

@@ -231,7 +231,11 @@ clearSelectionsButton.addEventListener("click", () => {
   selectedProducts = [];
   localStorage.removeItem(SELECTED_PRODUCTS_KEY);
   displaySelectedProducts();
-  displayProducts(getFilteredProducts());
+
+  // Keep the current grid in place instead of showing every product.
+  productsContainer.querySelectorAll(".product-card.selected").forEach((card) => {
+    card.classList.remove("selected");
+  });
 });
 
 /* Send the conversation to the AI worker and return its reply. */
